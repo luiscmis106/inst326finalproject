@@ -24,3 +24,6 @@ class Family:
             child_name (str): Name of the child to add
         """
         self.children.append(child_name) # Appends child name to child list
+
+family = Family()
+family.add_parent("Greg Coldren") #Created family object and added parent - Luis
