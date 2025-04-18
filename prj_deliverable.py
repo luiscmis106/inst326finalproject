@@ -50,55 +50,73 @@ def turn(p1_name, p2_name):
         turn = 1-turn
 # Tysen's - Computer player Function:
 # Intended to be a really smart computer player to give the players competition.
+
 def smart_computer(my_hp, my_max_hp, opp_hp, opp_max_hp, last_actions=None,
-                                heal_range=(10, 20), attack_range=(8, 15)):
+                   heal_range=(10, 20), attack_range=(8, 15), num_iterations=2):
     if last_actions is None:
         last_actions = []
-  #  Evaluate current state
-    my_ratio = my_hp / my_max_hp
-    opp_ratio = opp_hp / opp_max_hp
-    hp_difference = my_hp - opp_hp
 
-  # calculate expected scores
-    expected_heal = sum(heal_range) / 2
-    expected_attack = sum(attack_range) / 2
+    # Initialize variables to store final decision
+    final_action = None
 
- # Determine if we can kill the opponent this turn
-    can_kill = opp_hp <= attack_range[1]
+    # Iterate through decision making multiple times
+    for _ in range(num_iterations):
+        # Evaluate current state
+        my_ratio = my_hp / my_max_hp
+        opp_ratio = opp_hp / opp_max_hp
+        hp_difference = my_hp - opp_hp
 
- # Determine our risks
-    at_risk = my_hp <= attack_range[1]
+        # calculate expected scores
+        expected_heal = sum(heal_range) / 2
+        expected_attack = sum(attack_range) / 2
 
-  # Enter panic mode if dangerously low
-    in_panic_mode = my_hp < 0.2 * my_max_hp
+        # checking if we can kill the opponent this turn
+        can_kill = opp_hp <= attack_range[1]
 
-  # risk profile 
-    base_aggression = 0.5
-    aggression_bonus = (my_ratio - opp_ratio) * 0.5  # scale from -0.5 to 0.5
-    risk_tolerance = base_aggression + aggression_bonus
+        # determine our risks
+        at_risk = my_hp <= attack_range[1]
 
-    # Clamp risk tolerance
-    risk_tolerance = max(0.1, min(0.9, risk_tolerance))
+        # enter panic mode if at risk of death
+        in_panic_mode = my_hp < 0.2 * my_max_hp
 
-    # Panic mode: prioritize healing, unless we can kill
-    if in_panic_mode:
-        if can_kill:
-            return 'attack'
-        else:
-            return 'heal' if random.random() > 0.2 else 'attack'
+        # risk assesment
+        base_aggression = 0.5
+        aggression_bonus = (my_ratio - opp_ratio) * 0.5  # scale from -0.5 to 0.5
+        risk_tolerance = base_aggression + aggression_bonus
 
-    # If we are winning and can get a kill soon, attack
-    if can_kill:
-        return 'attack'
+        #  risk tolerance
+        risk_tolerance = max(0.1, min(0.9, risk_tolerance))
 
-    # If opponent is a lot weaker be aggressive
-    if hp_difference > 0.3 * my_max_hp and opp_hp > expected_attack:
-        return 'attack'
+        # Panic mode: think healing first, unless we can kill
+        if in_panic_mode:
+            if can_kill:
+                final_action = 'attack'
+            else:
+                final_action = 'heal' if random.random() > 0.2 else 'attack'
 
-    # Avoid over-healing or wasting heals
-    if my_hp + heal_range[1] >= my_max_hp and opp_hp > my_hp:
-        return 'attack'
+        # if we  winning and can get a kill soon, attack
+        elif can_kill:
+            final_action = 'attack'
 
+        # if opponent is a lot weaker, be aggressive
+        elif hp_difference > 0.3 * my_max_hp and opp_hp > expected_attack:
+            final_action = 'attack'
 
+        # avoid wasting heals
+        elif my_hp + heal_range[1] >= my_max_hp and opp_hp > my_hp:
+            final_action = 'attack'
+        
+        # random default to healing or attacking in case no decision is made
+        if final_action is None:
+            if random.random() < risk_tolerance:
+                final_action = 'attack'
+            else:
+                final_action = 'heal'
+        
+        # Optionally, you can decide to stop iterating once an action has been chosen
+        if final_action:
+            break
+
+    return final_action
 
     
