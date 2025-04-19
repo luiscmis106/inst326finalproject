@@ -119,4 +119,39 @@ def smart_computer(my_hp, my_max_hp, opp_hp, opp_max_hp, last_actions=None,
 
     return final_action
 
+def player_turn(player, enemy, effects = None):
+    if effects is None:
+        effects = {}
+
+    report = {}
+    roll = random.randint(1, 20)
+
+    # Decision logic based on player type and health 
+    hp_ratio = player['hp'] / player['max_hp']
+    
+    if player['type'] == "healer" and hp_ratio < 0.5:
+        action = "heal"
+    elif player['type'] == "tank" and hp_ratio < 0.3:
+        action = "heal"
+    else:
+        action = "attack"
+
+    # Applies action
+    if action == "attack":
+        damage = roll + (5 if player['type'] == "warrior" else 0)
+        enemy['hp'] = max(0, enemy['hp'] - damage)
+        report['action'] = "attack"
+        report['amount'] = damage
+    else:  # heal
+        heal = roll + (3 if player['type'] == "healer" else 0)
+        player['hp'] = min(player['max_hp'], player['hp'] + heal)
+        report['action'] = "heal"
+        report['amount'] = heal
+
+    # Update and return the turn summary
+    report['player_hp'] = player['hp']
+    report['enemy_hp'] = enemy['hp']
+    report['effects'] = effects  # Could expand later with real logic
+
+    return report
     
