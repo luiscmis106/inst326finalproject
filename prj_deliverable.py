@@ -119,6 +119,7 @@ def smart_computer(my_hp, my_max_hp, opp_hp, opp_max_hp, last_actions=None,
 
     return final_action
 
+# Guy's function
 def player_turn(player, enemy, effects = None):
     if effects is None:
         effects = {}
