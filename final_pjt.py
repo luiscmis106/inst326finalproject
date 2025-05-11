@@ -1,4 +1,7 @@
-#updated computer ngl idk 
+import sys
+import random
+from argparse import ArgumentParser
+
 class Player:
     def __init__(self, name, health, max_health, attack_power=0, heal_power=0, type="warrior"):
         self.name = name
