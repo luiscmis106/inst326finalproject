@@ -27,3 +27,53 @@ class ComputerPlayer(Player):
         )
 
         return decision
+
+class Game:
+    def __init__(self, *players):
+        self.players = list(players)
+        self.current_turn = 0
+
+    def play_turn(self, player, coins_to_use, action="auto"):
+        if not player.is_alive():
+            return
+        chosen_action = (
+            action if action in {"attack", "heal"}
+            else ("heal" if player.health < 30 else "attack")
+        )
+        coins_spent = min(coins_to_use, player.coins)
+
+        with open("game_log.txt", "a") as log:
+            log.write(f"{player.name} used {coins_spent} coins to {chosen_action}\n")
+
+        if chosen_action == "attack":
+            target = self.get_opponent(player)
+            if target:
+                damage = player.attack(coins_spent)
+                target.health -= damage
+                print(f"{player.name} attacked {target.name} for {damage} damage!")
+        else:
+            player.heal(coins_spent)
+            print(f"{player.name} healed for {coins_spent * 3} health!")
+
+        print(f"{player.name} → Health: {player.health}, Coins: {player.coins}")
+
+    def get_opponent(self, player):
+        return next(p for p in self.players if p != player)
+
+    def is_game_over(self):
+        return any(not p.is_alive() for p in self.players)
+
+    def get_winner(self):
+        alive = [p for p in self.players if p.is_alive()]
+        return alive[0] if alive else None
+
+    def end_game(self):
+        winner = self.get_winner()
+        loser = next((p for p in self.players if p != winner), None)
+
+        print("\n--- Game Over ---")
+        if winner:
+            print(f" Winner: {winner.name} with {winner.health} health remaining!")
+            print(f" Eliminated: {loser.name}")
+        else:
+            print("It's a draw. Both players were eliminated.")
