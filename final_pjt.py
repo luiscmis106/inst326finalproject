@@ -44,8 +44,8 @@ def player_turn(player, enemy, effects=None):
 
 
 class ComputerPlayer(Player):
-    def __init__(self, hp, max_hp, attack_power=0, heal_power=0):
-        super().__init__(hp, max_hp, attack_power, heal_power)
+    def __init__(self,name, hp, max_hp, attack_power=0, heal_power=0):
+        super().__init__(hp,name, max_hp, attack_power, heal_power)
 
     def choose_action(self, opponent, panic_threshold=0.2,):
         # Sequence unpacking for readability
