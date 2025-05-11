@@ -27,11 +27,60 @@ class Player:
 
 
 class ComputerPlayer(Player):
+    """
+    A subclass of Player that represents a computer-controlled player in the game. 
+    The computer player makes decisions based on its health, attack power, and healing 
+    power, as well as the state of the opponent's health.
+
+    Attributes:
+        hp (int): Current health of the computer player.
+        max_hp (int): Maximum health of the computer player.
+        attack_power (int): The attack power of the computer player.
+        heal_power (int): The healing power of the computer player.
+        type (str): The type of the player (not directly used in ComputerPlayer, but inherited from Player).
+    
+    Methods:
+        __init__(self, name, hp, max_hp, attack_power=0, heal_power=0):
+            Initializes a ComputerPlayer instance with the given attributes.
+        
+        choose_action(self, opponent, panic_threshold=0.2):
+            Determines the next action the computer player should take based on its own state 
+            and the state of the opponent. The decision-making considers panic, the ability to 
+            kill, and healing needs.
+    """
+
+    def __init__(self, name, hp, max_hp, attack_power=0, heal_power=0):
+        """
+        Initializes a new ComputerPlayer object with the given attributes.
+        
+        Args:
+            name (str): The name of the computer player.
+            hp (int): The current health of the computer player.
+            max_hp (int): The maximum health of the computer player.
+            attack_power (int, optional): The attack power of the computer player. Defaults to 0.
+            heal_power (int, optional): The healing power of the computer player. Defaults to 0.
+        """
     def __init__(self,name, hp, max_hp, attack_power=0, heal_power=0):
         super().__init__(hp,name, max_hp, attack_power, heal_power)
 
     def choose_action(self, opponent, panic_threshold=0.2,):
-        # Sequence unpacking for readability
+       """
+        Determines the action the computer player should take on its turn.
+
+        The decision-making logic considers:
+        - If the computer playerneeds to go into panic mode (health is below a certain threshold), 
+          it will try to heal if possible.
+        - If the computer player is able to win with its attack, it will choose to attack.
+        - If the computer player needs to be healed, it will prioritize healing.
+        - Otherwise, it chooses the best action (either attack or heal) based on available power.
+        
+        Args:
+            opponent (Player): The opponent player object that the computer player faces.
+            panic_threshold (float, optional): The health threshold for panic mode (as a fraction of max health). Defaults to 0.2.
+
+        Returns:
+            str: The action the computer player will take. Can be either "attack" or "heal".
+        """
         my_hp, my_max, atk, heal = self.hp, self.max_hp, self.attack_power, self.heal_power
         opp_hp = opponent.hp
 
@@ -104,3 +153,71 @@ class Game:
             print(f" Eliminated: {loser.name}")
         else:
             print("It's a draw. Both players were eliminated.")
+def parse_args(arglist):
+    """
+    Parse command-line arguments for the game.
+
+    Required arguments:
+        - name- the name of the player
+        - hp- starting health points
+        - max_hp- maximum health points
+
+    Args:
+        arglist (list of str): arguments from the command line.
+
+    Returns:
+        namespace: the parsed arguments.
+    """
+    parser = ArgumentParser()
+    parser.add_argument("name", help="player's name")
+    parser.add_argument("hp", type=int, help="starting health")
+    parser.add_argument("max_hp", type=int, help="maximum health")
+    return parser.parse_args(arglist)
+
+def main(args):
+       """
+    Main function to control the flow of the game. It initializes the player and enemy, 
+    handles store purchases (if specified), and controls the game loop. 
+
+
+    Args:
+        args (namespace): The arguments parsed from the command line. These arguments include:
+            - name: The name of the player.
+            - hp: The starting health of the player.
+            - max_hp: The maximum health of the player.
+    Returns:
+        None
+    """
+    player = Player(name=args.name, hp=args.hp, max_hp=args.max_hp, attack_power=0, heal_power=0, type="none")
+    player.coins = random.randint(1, 6)
+    print(f"{player.name} rolled and got {player.coins} coins!")
+
+    # Store purchase before the battle if argument provided
+    if args.store_first:
+        store(player)
+        if player.attack_power == 0 and player.heal_power == 0:
+            print("You need to purchase a class to start the game.")
+            return
+            
+    enemy = ComputerPlayer(name="EnemyBot", hp=40, max_hp=40, attack_power=0, heal_power=0)
+    game = Game(player, enemy)
+
+    
+    while not game.is_game_over():
+        print(f"\n{player.name}'s Turn")
+        game.play_turn(player, coins_to_use=5)
+
+        if enemy.is_alive():
+            action = enemy.choose_action(player)
+            print(f"{enemy.name} chooses to {action}.")
+            if action == "attack":
+                player.hp = max(0, player.hp - enemy.attack_power)
+                print(f"{enemy.name} dealt {enemy.attack_power} damage.")
+            elif action == "heal":
+                enemy.hp = min(enemy.max_hp, enemy.hp + enemy.heal_power)
+                print(f"{enemy.name} healed for {enemy.heal_power} HP.")
+
+    game.end_game()
+if __name__ == "__main__":
+    args = parse_args(sys.argv[1:])
+    main(args)
