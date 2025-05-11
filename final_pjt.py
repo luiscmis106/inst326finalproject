@@ -1,44 +1,24 @@
 #updated computer ngl idk 
 class Player:
-    def __init__(self, hp, max_hp, attack_power=0, heal_power=0, type="warrior"):
-        self.hp = hp
-        self.max_hp = max_hp
+    def __init__(self, name, health, max_health, attack_power=0, heal_power=0, type="warrior"):
+        self.name = name
+        self.health = health
+        self.max_health = max_health
         self.attack_power = attack_power
         self.heal_power = heal_power
-        self.type = type  
-# Guy's function
-def player_turn(player, enemy, effects=None):
-    if effects is None:
-        effects = {}
+        self.type = type
+        self.coins = 0
 
-    report = {}
-    roll = random.randint(1, 20)
+    def is_alive(self):
+        return self.health > 0
 
-    if player.type == "warrior":
-        action = "attack"
-    elif player.type == "healer":
-        action = "heal"
-    else:
-        action = "attack" 
+    def attack(self, coins_spent):
+        return coins_spent * self.attack_power
 
-    if action == "attack":
-        bonus = 5 if player.type == "warrior" else 0
-        damage = roll + bonus
-        enemy.hp = max(0, enemy.hp - damage)
-        report['action'] = "attack"
-        report['amount'] = damage
-    else:  
-        bonus = 3 if player.type == "healer" else 0
-        heal = roll + bonus
-        player.hp = min(player.max_hp, player.hp + heal)
-        report['action'] = "heal"
-        report['amount'] = heal
-
-    report['player_hp'] = player.hp
-    report['enemy_hp'] = enemy.hp
-    report['effects'] = effects
-
-    return report
+    def heal(self, coins_spent):
+        heal_amount = coins_spent * self.heal_power
+        self.health = min(self.max_health, self.health + heal_amount)
+        return heal_amount
 
 
 
