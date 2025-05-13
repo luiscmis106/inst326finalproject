@@ -93,14 +93,65 @@ class Player:
 
 
 
-class ComputerPlayer(Player):
+ """
+    A subclass of Player that represents an AI-controlled opponent.
+
+    The ComputerPlayer automatically selects items during its turn,
+    preferring high-value attack items if affordable, and falling back
+    on healing items or a random choice otherwise.
+
+    Primary Author: Tysen Wills  
+    Techniques Claimed:
+    - method overriding using super()
+    """
     def __init__(self, name, hp, max_hp, attack_power=0, heal_power=0):
+        """
+        Initializes the computer player.
+
+        Parameters:
+        - name (str): The name of the computer player.
+        - hp (int): Starting health points.
+        - max_hp (int): Maximum possible health points.
+        - attack_power (int, optional): Additional damage added to attacks.
+        - heal_power (int, optional): Additional healing power.
+
+        Primary Author: Tysen Wills  
+        """
         super().__init__(name, hp, max_hp, attack_power, heal_power)
         self.is_computer = True
 
     def choose_item(self, items):
+        """
+        Selects the most valuable item from the store.
+
+        Preference goes to attack items. If no attack items are
+        affordable, the highest-value healing item is selected. If neither
+        are available, a random affordable item is chosen.
+
+        Parameters:
+        - items (list of dict): List of store items, each with keys: 'name', 'type', 'cost', 'value'.
+
+        Returns:
+        - dict or None: The selected item dictionary, or None if no items are affordable.
+
+        Primary Author: Tysen Wills  
+        """
         affordable = [item for item in items if item["cost"] <= self.coins]
-        return random.choice(affordable) if affordable else None
+        if not affordable:
+            return None
+
+        # Try to go for attack items first.
+        attack_items = [item for item in affordable if item["type"] == "attack"]
+        if attack_items:
+            return max(attack_items, key=lambda x: x["value"])  # pick strongest attack
+
+        # If can't, choose best healing item :P
+        heal_items = [item for item in affordable if item["type"] == "heal"]
+        if heal_items:
+            return max(heal_items, key=lambda x: x["value"])
+
+        # Fallback: random choice
+        return random.choice(affordable)
 
 def dice_roll():
     return random.randint(1, 6)
@@ -230,6 +281,17 @@ class Game:
 
 
 def parse_args():
+     """
+    Parses command-line arguments to retrieve the player's name.
+
+    Returns:
+    - Namespace: Contains the 'name' argument as a string.
+
+    Primary Author: Tysen Wills  
+    Techniques Claimed:
+    - Use of argparse for command-line interface  
+    - Handling required command-line input
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--name", type=str, required=True, help="Enter your name")
     return parser.parse_args()
