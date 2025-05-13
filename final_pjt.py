@@ -134,14 +134,58 @@ def get_store_choice(player):
         return None
 
 class Game:
+    """
+    Manages the turn-based gameplay between two players including rolling, store interactions,
+    healing, attacking, and win conditions.
+
+    Primary Author: Gerardo Sandoval  
+    Techniques Claimed:
+    - f-strings  
+    - Conditional expression (ternary operator)
+    """
+    
     def __init__(self, player1, player2):
+        """
+        Initializes a new game with two players.
+
+        Parameters:
+        - player1 (Player): The first player object.
+        - player2 (Player): The second player object.
+
+        Primary Author: Gerardo Sandoval  
+        """
         self.player1 = player1
         self.player2 = player2
 
     def get_opponent(self, current):
+        """
+        Returns the opponent of the current player.
+
+        Parameters:
+        - current (Player): The player whose opponent is being requested.
+
+        Returns:
+        - Player: The opposing player.
+
+        Primary Author: Gerardo Sandoval  
+        Techniques Claimed:
+        - Conditional expression
+        """
         return self.player2 if current == self.player1 else self.player1
 
     def play_turn(self, player):
+        """
+        Executes a full turn for a player: rolls dice, adds coins, lets the player purchase an item
+        from the store, and applies the item's effects.
+
+        Parameters:
+        - player (Player): The player whose turn is being played.
+
+        Primary Author: Gerardo Sandoval  
+        Techniques Claimed:
+        - f-strings  
+        - Conditional expression
+        """
         if not player.is_alive():
             return
 
@@ -165,8 +209,14 @@ class Game:
 
         print(f"{player.name} → Health: {player.health}, Coins: {player.coins}")
 
-
     def play(self):
+        """
+        Runs the full game loop, alternating turns between the two players until one is defeated.
+
+        Primary Author: Gerardo Sandoval  
+        Techniques Claimed:
+        - f-strings
+        """
         print("\n-- Game Start --")
         while self.player1.is_alive() and self.player2.is_alive():
             self.play_turn(self.player1)
@@ -177,6 +227,7 @@ class Game:
             if not self.player1.is_alive():
                 print(f"\n{self.player2.name} wins!")
                 break
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
