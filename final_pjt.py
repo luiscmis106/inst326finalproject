@@ -141,7 +141,7 @@ class Game:
     Primary Author: Gerardo Sandoval  
     Techniques Claimed:
     - f-strings  
-    - Conditional expression (ternary operator)
+    - Conditional expression 
     """
     
     def __init__(self, player1, player2):
