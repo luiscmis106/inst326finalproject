@@ -155,6 +155,12 @@ class ComputerPlayer(Player):
 
 
 def dice_roll():
+    """ The player's dice roll and items in the store
+
+    Returns:
+        A random integer from 1 to 6 that represents the number rolled
+
+    Primary Author: Luis Jovel Lainez
     return random.randint(1, 6)
 
 STORE_ITEMS = [
