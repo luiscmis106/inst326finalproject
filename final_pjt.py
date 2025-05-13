@@ -1,310 +1,127 @@
 import sys
 import random
-from argparse import ArgumentParser
-
-def dice_roll():
-    """The dice roll for the game
-    
-    Returns:
-        The plyer's dice roll and the opponent's dice roll
-    """
-    
-    roll_one = random.randint(0, 6)
-    roll_two = random.randint(0, 6)
-    roll_three = random.randint(0, 6)
-    roll_four = random.randint(0,6)
-    total_roll = roll_one + roll_two
-    player2_roll = roll_three + roll_four
-    
-    power = {0: "Skip turn", 
-                 2: "Deal 2 extra damage",
-                 4: "Heal 2 HP",
-                 6: "Shield 2 damage",
-                 8: "Opponent skips turn",
-                 10: "Repel next attack",
-                 12: "Take 3 HP from opponent"}
-    
-    if(total_roll == 0 or player2_roll == 0):
-        power.get(0)
-    elif (total_roll == 2 or player2_roll == 2):
-        power.get(2)
-    elif(total_roll == 4 or player2_roll == 4):
-        power.get(4)
-    elif(total_roll == 6 or player2_roll == 6):
-        power.get(6)
-    elif(total_roll == 8 or player2_roll == 8):
-        power.get(8)
-    elif(total_roll == 10 or player2_roll == 10):
-        power.get(10)
-    elif(total_roll == 12 or player2_roll == 12):
-        power.get(12)
-    
-    
-    if (total_roll != player2_roll):
-        return(total_roll, player2_roll)
-    
-    while (total_roll == player2_roll):
-        break
-    return("Same number, roll again!")
-    
-    
-dice_roll()
-
-class player_store:
-    """This is the store where a player can buy powerups based on an odd
-    numbered dice roll"""
-    power_up = {3: "Skip turn", 
-                 5: "Deal 2 extra damage",
-                 7: "Block next attack",
-                 9: "Heal 2 HP",
-                 11: "Shield 2 damage",
-                 13: "Opponent always misses",
-                 15: "Repel next attack",
-                 17: "Take 3 HP from opponent",
-                 19: "Player always hits"}
-    
-    if dice_roll.random == 0:
-        print("You don't have enough points!")
-    else:
-        print("Welcome to the store! What would you like to purchase?")
-        
-    if dice_roll.random == power_up.get(3):
-        print("Would you like to buy the ability to skip one turn?")
-    elif dice_roll.random == power_up.get(5):
-        print("Would you like for your next attack to deal 2 additional damage")
-    elif dice_roll.random == power_up.get(7):
-        print("Would you like to block the next attack?")
-    elif dice_roll.random == power_up.get(9):
-        print("Would you like to instantly restore 2 HP?")
-    elif dice_roll.random == power_up.get(11):
-        print("Would you like to shield the next 2 damage points?")
-    elif dice_roll.random == power_up.get(13):
-        print("Would you like for your opponent to miss their next action?")
-    elif dice_roll.random == power_up.get(15):
-        print("Would you like to deflect the next attack to your enemy?")
-    elif dice_roll.random == power_up.get(17):
-        print("Would you like to drain 3 HP from your enemy?")
-    elif dice_roll.random == power_up.get(19):
-        print("Would you like to attack regardless of your dice roll?")
-        
-        
+import argparse
 
 class Player:
-    def __init__(self, name, health, max_health, attack_power=0, heal_power=0, type="warrior"):
+    def __init__(self, name, hp, max_hp, attack_power=0, heal_power=0):
         self.name = name
-        self.health = health
-        self.max_health = max_health
+        self.health = hp
+        self.max_hp = max_hp
         self.attack_power = attack_power
         self.heal_power = heal_power
-        self.type = type
         self.coins = 0
+        self.is_computer = False
+
+    def attack(self, base):
+        damage = base + self.attack_power
+        return damage
+
+    def heal(self, base):
+        amount = base + self.heal_power
+        self.health = min(self.max_hp, self.health + amount)
+        return amount
 
     def is_alive(self):
         return self.health > 0
 
-    def attack(self, coins_spent):
-        return coins_spent * self.attack_power
-
-    def heal(self, coins_spent):
-        heal_amount = coins_spent * self.heal_power
-        self.health = min(self.max_health, self.health + heal_amount)
-        return heal_amount
-
-
-
+    def __repr__(self):
+        return f"{self.name} (HP: {self.health}/{self.max_hp}, Coins: {self.coins})"
 
 class ComputerPlayer(Player):
-    """
-    A subclass of Player that represents a computer-controlled player in the game. 
-    The computer player makes decisions based on its health, attack power, and healing 
-    power, as well as the state of the opponent's health.
-
-    Attributes:
-        hp (int): Current health of the computer player.
-        max_hp (int): Maximum health of the computer player.
-        attack_power (int): The attack power of the computer player.
-        heal_power (int): The healing power of the computer player.
-        type (str): The type of the player (not directly used in ComputerPlayer, but inherited from Player).
-    
-    Methods:
-        __init__(self, name, hp, max_hp, attack_power=0, heal_power=0):
-            Initializes a ComputerPlayer instance with the given attributes.
-        
-        choose_action(self, opponent, panic_threshold=0.2):
-            Determines the next action the computer player should take based on its own state 
-            and the state of the opponent. The decision-making considers panic, the ability to 
-            kill, and healing needs.
-    """
-
     def __init__(self, name, hp, max_hp, attack_power=0, heal_power=0):
-        """
-        Initializes a new ComputerPlayer object with the given attributes.
-        
-        Args:
-            name (str): The name of the computer player.
-            hp (int): The current health of the computer player.
-            max_hp (int): The maximum health of the computer player.
-            attack_power (int, optional): The attack power of the computer player. Defaults to 0.
-            heal_power (int, optional): The healing power of the computer player. Defaults to 0.
-        """
-    def __init__(self,name, hp, max_hp, attack_power=0, heal_power=0):
-        super().__init__(hp,name, max_hp, attack_power, heal_power)
+        super().__init__(name, hp, max_hp, attack_power, heal_power)
+        self.is_computer = True
 
-    def choose_action(self, opponent, panic_threshold=0.2,):
-       """
-        Determines the action the computer player should take on its turn.
+    def choose_item(self, items):
+        affordable = [item for item in items if item["cost"] <= self.coins]
+        return random.choice(affordable) if affordable else None
 
-        The decision-making logic considers:
-        - If the computer playerneeds to go into panic mode (health is below a certain threshold), 
-          it will try to heal if possible.
-        - If the computer player is able to win with its attack, it will choose to attack.
-        - If the computer player needs to be healed, it will prioritize healing.
-        - Otherwise, it chooses the best action (either attack or heal) based on available power.
-        
-        Args:
-            opponent (Player): The opponent player object that the computer player faces.
-            panic_threshold (float, optional): The health threshold for panic mode (as a fraction of max health). Defaults to 0.2.
+def dice_roll():
+    return random.randint(1, 6)
 
-        Returns:
-            str: The action the computer player will take. Can be either "attack" or "heal".
-        """
-        my_hp, my_max, atk, heal = self.hp, self.max_hp, self.attack_power, self.heal_power
-        opp_hp = opponent.hp
+STORE_ITEMS = [
+    {"name": "Small Potion", "type": "heal", "cost": 1, "value": 5},
+    {"name": "Medium Potion", "type": "heal", "cost": 3, "value": 15},
+    {"name": "Large Potion", "type": "heal", "cost": 5, "value": 30},
+    {"name": "Iron Blade", "type": "attack", "cost": 2, "value": 10},
+    {"name": "Steel Blade", "type": "attack", "cost": 4, "value": 20},
+    {"name": "Titan Blade", "type": "attack", "cost": 6, "value": 40},
+]
 
-        in_panic = my_hp < panic_threshold * my_max
-        can_kill = atk > 0 and opp_hp <= atk
-        can_heal = heal > 0 and my_hp < my_max
-        needs_heal = my_hp < opp_hp and heal > 0
+def show_store(coins):
+    print("\n-- Store --")
+    for item in STORE_ITEMS:
+        if item["cost"] <= coins:
+            sign = "+" if item["type"] == "heal" else "-"
+            print(f"{item['name']} ({item['type']}, {sign}{item['value']}): {item['cost']} coins")
 
-        # Score actions using lambda as key function
-        actions = {
-            "attack": atk if atk > 0 else -1,
-            "heal": heal if can_heal else -1
-        }
-
-        decision = (
-            "heal" if in_panic and can_heal else
-            "attack" if can_kill else
-            "heal" if needs_heal else
-            max(actions.items(), key=lambda pair: pair[1])[0]
-        )
-
-        return decision
+def get_store_choice(player):
+    show_store(player.coins)
+    if player.is_computer:
+        return player.choose_item(STORE_ITEMS)
+    else:
+        choice = input(f"{player.name}, choose an item to buy (or press enter to skip): ").strip()
+        for item in STORE_ITEMS:
+            if item["name"] == choice and item["cost"] <= player.coins:
+                return item
+        print("Invalid choice or not enough coins.")
+        return None
 
 class Game:
-    def __init__(self, *players):
-        self.players = list(players)
-        self.current_turn = 0
+    def __init__(self, player1, player2):
+        self.player1 = player1
+        self.player2 = player2
 
-    def play_turn(self, player, coins_to_use, action="auto"):
+    def get_opponent(self, current):
+        return self.player2 if current == self.player1 else self.player1
+
+    def play_turn(self, player):
         if not player.is_alive():
             return
-        chosen_action = (
-            action if action in {"attack", "heal"}
-            else ("heal" if player.health < 30 else "attack")
-        )
-        coins_spent = min(coins_to_use, player.coins)
 
-        with open("game_log.txt", "a") as log:
-            log.write(f"{player.name} used {coins_spent} coins to {chosen_action}\n")
+        print(f"\n{player.name}'s turn:")
+        roll = dice_roll()
+        player.coins += roll
+        print(f"{player.name} rolled a {roll} and received {roll} coins! Total coins: {player.coins}")
 
-        if chosen_action == "attack":
-            target = self.get_opponent(player)
-            if target:
-                damage = player.attack(coins_spent)
-                target.health -= damage
-                print(f"{player.name} attacked {target.name} for {damage} damage!")
+        item = get_store_choice(player)
+        if item:
+            player.coins -= item["cost"]
+            if item["type"] == "heal":
+                healed = player.heal(item["value"])
+                print(f"{player.name} used {item['name']} and healed for +{healed} HP!") 
+            elif item["type"] == "attack":
+                opponent = self.get_opponent(player)
+                opponent.health -= item["value"]
+                print(f"{player.name} used {item['name']} and dealt -{item['value']} HP to {opponent.name}!")  
         else:
-            player.heal(coins_spent)
-            print(f"{player.name} healed for {coins_spent * 3} health!")
+            print(f"{player.name} skipped their turn or made no valid purchase.")
 
         print(f"{player.name} → Health: {player.health}, Coins: {player.coins}")
 
-    def get_opponent(self, player):
-        return next(p for p in self.players if p != player)
+    def play(self):
+        print("\n-- Game Start --")
+        while self.player1.is_alive() and self.player2.is_alive():
+            self.play_turn(self.player1)
+            if not self.player2.is_alive():
+                print(f"\n{self.player1.name} wins!")
+                break
+            self.play_turn(self.player2)
+            if not self.player1.is_alive():
+                print(f"\n{self.player2.name} wins!")
+                break
 
-    def is_game_over(self):
-        return any(not p.is_alive() for p in self.players)
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--name", type=str, required=True, help="Enter your name")
+    return parser.parse_args()
 
-    def get_winner(self):
-        alive = [p for p in self.players if p.is_alive()]
-        return alive[0] if alive else None
+def main():
+    args = parse_args()
+    player1 = Player(args.name, hp=100, max_hp=100, attack_power=0, heal_power=0)
+    player2 = ComputerPlayer("Computer", hp=100, max_hp=100, attack_power=0, heal_power=0)
+    game = Game(player1, player2)
+    game.play()
 
-    def end_game(self):
-        winner = self.get_winner()
-        loser = next((p for p in self.players if p != winner), None)
-
-        print("\n--- Game Over ---")
-        if winner:
-            print(f" Winner: {winner.name} with {winner.health} health remaining!")
-            print(f" Eliminated: {loser.name}")
-        else:
-            print("It's a draw. Both players were eliminated.")
-def parse_args(arglist):
-    """
-    Parse command-line arguments for the game.
-
-    Required arguments:
-        - name- the name of the player
-        - hp- starting health points
-        - max_hp- maximum health points
-
-    Args:
-        arglist (list of str): arguments from the command line.
-
-    Returns:
-        namespace: the parsed arguments.
-    """
-    parser = ArgumentParser()
-    parser.add_argument("name", help="player's name")
-    parser.add_argument("hp", type=int, help="starting health")
-    parser.add_argument("max_hp", type=int, help="maximum health")
-    return parser.parse_args(arglist)
-
-def main(args):
-       """
-    Main function to control the flow of the game. It initializes the player and enemy, 
-    handles store purchases (if specified), and controls the game loop. 
-
-
-    Args:
-        args (namespace): The arguments parsed from the command line. These arguments include:
-            - name: The name of the player.
-            - hp: The starting health of the player.
-            - max_hp: The maximum health of the player.
-    Returns:
-        None
-    """
-    player = Player(name=args.name, hp=args.hp, max_hp=args.max_hp, attack_power=0, heal_power=0, type="none")
-    player.coins = random.randint(1, 6)
-    print(f"{player.name} rolled and got {player.coins} coins!")
-
-    # Store purchase before the battle if argument provided
-    if args.store_first:
-        store(player)
-        if player.attack_power == 0 and player.heal_power == 0:
-            print("You need to purchase a class to start the game.")
-            return
-            
-    enemy = ComputerPlayer(name="EnemyBot", hp=40, max_hp=40, attack_power=0, heal_power=0)
-    game = Game(player, enemy)
-
-    
-    while not game.is_game_over():
-        print(f"\n{player.name}'s Turn")
-        game.play_turn(player, coins_to_use=5)
-
-        if enemy.is_alive():
-            action = enemy.choose_action(player)
-            print(f"{enemy.name} chooses to {action}.")
-            if action == "attack":
-                player.hp = max(0, player.hp - enemy.attack_power)
-                print(f"{enemy.name} dealt {enemy.attack_power} damage.")
-            elif action == "heal":
-                enemy.hp = min(enemy.max_hp, enemy.hp + enemy.heal_power)
-                print(f"{enemy.name} healed for {enemy.heal_power} HP.")
-
-    game.end_game()
 if __name__ == "__main__":
-    args = parse_args(sys.argv[1:])
-    main(args)
+    main()
