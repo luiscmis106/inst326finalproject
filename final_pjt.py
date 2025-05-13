@@ -91,9 +91,8 @@ class Player:
         """
         return f"{self.name} (HP: {self.health}/{self.max_hp}, Coins: {self.coins})"
 
-
-
- """
+class ComputerPlayer:
+    """
     A subclass of Player that represents an AI-controlled opponent.
 
     The ComputerPlayer automatically selects items during its turn,
@@ -104,6 +103,7 @@ class Player:
     Techniques Claimed:
     - method overriding using super()
     """
+    
     def __init__(self, name, hp, max_hp, attack_power=0, heal_power=0):
         """
         Initializes the computer player.
@@ -145,13 +145,14 @@ class Player:
         if attack_items:
             return max(attack_items, key=lambda x: x["value"])  # pick strongest attack
 
-        # If can't, choose best healing item :P
+        # If none, choose best healing item.
         heal_items = [item for item in affordable if item["type"] == "heal"]
         if heal_items:
             return max(heal_items, key=lambda x: x["value"])
 
         # Fallback: random choice
         return random.choice(affordable)
+
 
 def dice_roll():
     return random.randint(1, 6)
@@ -281,7 +282,7 @@ class Game:
 
 
 def parse_args():
-     """
+    """
     Parses command-line arguments to retrieve the player's name.
 
     Returns:
@@ -296,12 +297,22 @@ def parse_args():
     parser.add_argument("--name", type=str, required=True, help="Enter your name")
     return parser.parse_args()
 
+
 def main():
+    """
+    Main function to initialize players and start the game.
+
+    It creates a human player using the provided name from command-line arguments
+    and sets up a computer opponent before starting the game loop.
+
+    Primary Author: Tysen Wills  
+    """
     args = parse_args()
     player1 = Player(args.name, hp=100, max_hp=100, attack_power=0, heal_power=0)
     player2 = ComputerPlayer("Computer", hp=100, max_hp=100, attack_power=0, heal_power=0)
     game = Game(player1, player2)
     game.play()
+
 
 if __name__ == "__main__":
     main()
