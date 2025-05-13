@@ -89,15 +89,16 @@ class Game:
             player.coins -= item["cost"]
             if item["type"] == "heal":
                 healed = player.heal(item["value"])
-                print(f"{player.name} used {item['name']} and healed for +{healed} HP!") 
+                print(f"{player.name} used {item['name']} and healed for +{healed} HP to {player.health} total HP.")
             elif item["type"] == "attack":
                 opponent = self.get_opponent(player)
                 opponent.health -= item["value"]
-                print(f"{player.name} used {item['name']} and dealt -{item['value']} HP to {opponent.name}!")  
+                print(f"{player.name} used {item['name']} and dealt -{item['value']} HP to {opponent.name}, bringing them to {opponent.health} HP.")
         else:
             print(f"{player.name} skipped their turn or made no valid purchase.")
 
         print(f"{player.name} → Health: {player.health}, Coins: {player.coins}")
+
 
     def play(self):
         print("\n-- Game Start --")
