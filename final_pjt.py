@@ -91,7 +91,7 @@ class Player:
         """
         return f"{self.name} (HP: {self.health}/{self.max_hp}, Coins: {self.coins})"
 
-class ComputerPlayer:
+class ComputerPlayer(Player):
     """
     A subclass of Player that represents an AI-controlled opponent.
 
