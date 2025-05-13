@@ -173,6 +173,17 @@ STORE_ITEMS = [
 ]
 
 def show_store(coins):
+    """Displays the store
+
+    Args:
+        coins (int): the number of coins a player has
+
+    Primary Author: Luis Jovel Lainez
+
+    Techniques Claimed:
+    Conditional Expressions
+    Usage of dictionaries
+    
     print("\n-- Store --")
     for item in STORE_ITEMS:
         if item["cost"] <= coins:
@@ -180,6 +191,21 @@ def show_store(coins):
             print(f"{item['name']} ({item['type']}, {sign}{item['value']}): {item['cost']} coins")
 
 def get_store_choice(player):
+    """Displays the store based on the type of player
+
+    Args:
+        player (Player): the type of player
+    Side effects:
+        Adds an item to a player if they have enough coins
+    Returns:
+        An item from the store or None if the player doesn't have enough coins 
+
+    Primary Author: Luis Jovel Lainez
+    
+    Techniques Claimed:
+        Iteration
+        Usage of f-strings
+    
     show_store(player.coins)
     if player.is_computer:
         return player.choose_item(STORE_ITEMS)
