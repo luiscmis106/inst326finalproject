@@ -2,8 +2,31 @@ import sys
 import random
 import argparse
 
-class Player:
+class Player: 
+    """
+    Represents a player in a game with health, coins, and actions like attacking and healing.
+
+    Primary Author: Guy Saltsman
+    Techniques Claimed:
+    - Magic methods (__init__, __repr__)
+    - Optional parameters and/or keyword arguments
+    """
     def __init__(self, name, hp, max_hp, attack_power=0, heal_power=0):
+        """
+        Initializes a new player with name, health, attack power, and heal power.
+
+        Parameters:
+        - name (str): The name of the player.
+        - hp (int): Starting health points.
+        - max_hp (int): Maximum possible health points.
+        - attack_power (int, optional): Extra damage added to base attacks. Defaults to 0.
+        - heal_power (int, optional): Extra healing added to base heals. Defaults to 0.
+
+        Primary Author: Guy Saltsman  
+        Techniques Claimed:
+        - Optional parameters and/or keyword arguments  
+        - Magic method (__init__)
+        """
         self.name = name
         self.health = hp
         self.max_hp = max_hp
@@ -13,19 +36,62 @@ class Player:
         self.is_computer = False
 
     def attack(self, base):
+        """
+        Calculates the total attack damage based on a base value and the player's attack power.
+
+        Parameters:
+        - base (int): The base damage.
+
+        Returns:
+        - int: Total damage dealt.
+
+        Primary Author: Guy Saltsman
+        """
         damage = base + self.attack_power
         return damage
 
     def heal(self, base):
+        """
+        Heals the player by a base amount plus any bonus from heal_power, 
+        without exceeding max_hp.
+
+        Parameters:
+        - base (int): The base healing amount.
+
+        Returns:
+        - int: Actual amount healed.
+
+        Primary Author: Guy Saltsman  
+        """
         amount = base + self.heal_power
         self.health = min(self.max_hp, self.health + amount)
         return amount
 
     def is_alive(self):
+        """
+        Checks if the player is still alive (health > 0).
+
+        Returns:
+        - bool: True if alive, False otherwise.
+
+        Primary Author: Guy Saltsman  
+        """
         return self.health > 0
 
     def __repr__(self):
+        """
+        Returns a string representation of the player with name, current HP, max HP, and coins.
+
+        Returns:
+        - str: Player's status in formatted string.
+
+        Primary Author: Guy Saltsman  
+        Techniques Claimed:
+        - Magic method (__repr__)  
+        """
         return f"{self.name} (HP: {self.health}/{self.max_hp}, Coins: {self.coins})"
+
+
 
 class ComputerPlayer(Player):
     def __init__(self, name, hp, max_hp, attack_power=0, heal_power=0):
