@@ -143,14 +143,13 @@ class ComputerPlayer(Player):
         # Try to go for attack items first.
         attack_items = [item for item in affordable if item["type"] == "attack"]
         if attack_items:
-            return max(attack_items, key=lambda x: x["value"])  # pick strongest attack
+            return max(attack_items, key=lambda x: x["value"]) 
 
         # If none, choose best healing item.
         heal_items = [item for item in affordable if item["type"] == "heal"]
         if heal_items:
             return max(heal_items, key=lambda x: x["value"])
 
-        # Fallback: random choice
         return random.choice(affordable)
 
 def dice_roll():
@@ -183,7 +182,6 @@ def show_store(coins):
     Primary Author: Luis Jovel Lainez
 
     Techniques Claimed:
-    - Conditional Expressions
     - Usage of dictionaries
     """
     print("\n-- Store --")
@@ -209,7 +207,6 @@ def get_store_choice(player):
 
     Techniques Claimed:
     - Iteration
-    - Usage of f-strings
     """
     show_store(player.coins)
     if player.is_computer:
