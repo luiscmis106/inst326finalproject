@@ -153,14 +153,15 @@ class ComputerPlayer(Player):
         # Fallback: random choice
         return random.choice(affordable)
 
-
 def dice_roll():
-    """ The player's dice roll and items in the store
+    """
+    Simulates a dice roll.
 
     Returns:
-        A random integer from 1 to 6 that represents the number rolled
+        int: A random integer from 1 to 6 representing the number rolled.
 
     Primary Author: Luis Jovel Lainez
+    """
     return random.randint(1, 6)
 
 STORE_ITEMS = [
@@ -173,17 +174,18 @@ STORE_ITEMS = [
 ]
 
 def show_store(coins):
-    """Displays the store
+    """
+    Displays the store items that a player can afford based on their coins.
 
     Args:
-        coins (int): the number of coins a player has
+        coins (int): The number of coins the player currently has.
 
     Primary Author: Luis Jovel Lainez
 
     Techniques Claimed:
-    Conditional Expressions
-    Usage of dictionaries
-    
+    - Conditional Expressions
+    - Usage of dictionaries
+    """
     print("\n-- Store --")
     for item in STORE_ITEMS:
         if item["cost"] <= coins:
@@ -191,21 +193,24 @@ def show_store(coins):
             print(f"{item['name']} ({item['type']}, {sign}{item['value']}): {item['cost']} coins")
 
 def get_store_choice(player):
-    """Displays the store based on the type of player
+    """
+    Prompts the player to choose an item from the store.
 
     Args:
-        player (Player): the type of player
-    Side effects:
-        Adds an item to a player if they have enough coins
+        player (Player): The player choosing the item.
+
     Returns:
-        An item from the store or None if the player doesn't have enough coins 
+        dict or None: The chosen store item if valid, otherwise None.
+
+    Side Effects:
+        May call input() or use the player's automatic selection logic.
 
     Primary Author: Luis Jovel Lainez
-    
+
     Techniques Claimed:
-        Iteration
-        Usage of f-strings
-    
+    - Iteration
+    - Usage of f-strings
+    """
     show_store(player.coins)
     if player.is_computer:
         return player.choose_item(STORE_ITEMS)
@@ -219,22 +224,23 @@ def get_store_choice(player):
 
 class Game:
     """
-    Manages the turn-based gameplay between two players including rolling, store interactions,
-    healing, attacking, and win conditions.
+    Manages the turn-based gameplay between two players, including rolling,
+    store interactions, healing, attacking, and win conditions.
 
     Primary Author: Gerardo Sandoval  
+
     Techniques Claimed:
     - f-strings  
-    - Conditional expression 
+    - Conditional expressions 
     """
-    
+
     def __init__(self, player1, player2):
         """
-        Initializes a new game with two players.
+        Initializes the game with two players.
 
-        Parameters:
-        - player1 (Player): The first player object.
-        - player2 (Player): The second player object.
+        Args:
+            player1 (Player): The first player.
+            player2 (Player): The second player.
 
         Primary Author: Gerardo Sandoval  
         """
@@ -243,15 +249,16 @@ class Game:
 
     def get_opponent(self, current):
         """
-        Returns the opponent of the current player.
+        Gets the opponent of the current player.
 
-        Parameters:
-        - current (Player): The player whose opponent is being requested.
+        Args:
+            current (Player): The player whose opponent is to be found.
 
         Returns:
-        - Player: The opposing player.
+            Player: The opposing player.
 
         Primary Author: Gerardo Sandoval  
+
         Techniques Claimed:
         - Conditional expression
         """
@@ -259,13 +266,14 @@ class Game:
 
     def play_turn(self, player):
         """
-        Executes a full turn for a player: rolls dice, adds coins, lets the player purchase an item
-        from the store, and applies the item's effects.
+        Executes a player's turn: rolls the die, grants coins,
+        lets the player buy and use an item, and applies its effects.
 
-        Parameters:
-        - player (Player): The player whose turn is being played.
+        Args:
+            player (Player): The player taking the turn.
 
         Primary Author: Gerardo Sandoval  
+
         Techniques Claimed:
         - f-strings  
         - Conditional expression
@@ -295,9 +303,10 @@ class Game:
 
     def play(self):
         """
-        Runs the full game loop, alternating turns between the two players until one is defeated.
+        Runs the game loop, alternating turns until one player is defeated.
 
         Primary Author: Gerardo Sandoval  
+
         Techniques Claimed:
         - f-strings
         """
@@ -312,15 +321,15 @@ class Game:
                 print(f"\n{self.player2.name} wins!")
                 break
 
-
 def parse_args():
     """
-    Parses command-line arguments to retrieve the player's name.
+    Parses command-line arguments to get the human player's name.
 
     Returns:
-    - Namespace: Contains the 'name' argument as a string.
+        argparse.Namespace: Object containing the player's name.
 
     Primary Author: Tysen Wills  
+
     Techniques Claimed:
     - Use of argparse for command-line interface  
     - Handling required command-line input
@@ -329,13 +338,11 @@ def parse_args():
     parser.add_argument("--name", type=str, required=True, help="Enter your name")
     return parser.parse_args()
 
-
 def main():
     """
-    Main function to initialize players and start the game.
+    Initializes players and starts the game.
 
-    It creates a human player using the provided name from command-line arguments
-    and sets up a computer opponent before starting the game loop.
+    Creates a human and computer player, then starts the turn-based game loop.
 
     Primary Author: Tysen Wills  
     """
@@ -344,7 +351,6 @@ def main():
     player2 = ComputerPlayer("Computer", hp=100, max_hp=100, attack_power=0, heal_power=0)
     game = Game(player1, player2)
     game.play()
-
 
 if __name__ == "__main__":
     main()
